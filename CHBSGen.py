@@ -11,13 +11,13 @@ DEFAULT_MINIMUM_WORD_LENGTH = 1
 
 def main(argv=None):
     args = argHandler(argv)
-    print(generatePassword(args.wordlist, args.passlength))
+    print(generatePassword(args.wordlist, args.passlength, args.minWordLength))
 
 def argHandler(argv):
     parser = argparse.ArgumentParser(description='Generate correct horse battery staple style password.')
 
     parser.add_argument('-p','--passlength', default=DEFAULT_PASSWORD_LENGTH, type=int, help='wordlength of the generated password')
-    parser.add_argument('-m','--minWordlength', default=DEFAULT_MINIMUM_WORD_LENGTH, type=int, help='specify minimum individual wordlength')
+    parser.add_argument('-m','--minWordLength', default=DEFAULT_MINIMUM_WORD_LENGTH, type=int, help='specify minimum individual wordlength')
     parser.add_argument('wordlist', help='text file containing line separated words, used to generate password')
 
     return parser.parse_args(argv)
@@ -27,12 +27,26 @@ def getWordListLength(wordList):
     for line in open(wordList):
         WLLength = WLLength + 1
     
-    return WLLength 
+    return WLLength
+    
+def getWordFromList(wordList, minWordLength):
+    secureRandom = random.SystemRandom()
+    try:
+        if(minWordLength < 1):
+            raise ValueError("[errno 2] minWordLength is not positive")
+    except:
+        traceback.print_exc()
+    else:
+        while True:
+            randLine = secureRandom.randint(0, getWordListLength(wordList))
+            randWord = linecache.getline(wordList,randLine)
+            if (len(randWord) >= minWordLength+1):
+                linecache.clearcache()
+                return randWord            
 
-def generatePassword(wordList, passLength):
+def generatePassword(wordList, passLength, minWordLength):
     Wordpool = list()
     Job = 0
-    secureRandom=random.SystemRandom()
     
     try:
         if (passLength < 1):
@@ -43,10 +57,8 @@ def generatePassword(wordList, passLength):
     
     else:    
         while Job < passLength:
-            RandWord = secureRandom.randint(0, getWordListLength(wordList))
-            Wordpool.append(linecache.getline(wordList,RandWord))
+            Wordpool.append(getWordFromList(wordList, minWordLength))
             Job = Job + 1
-        linecache.clearcache()
 
         return "".join(Wordpool)
 
