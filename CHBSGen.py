@@ -4,31 +4,49 @@ import argparse
 import random
 import linecache
 import sys
+import traceback
 
 DEFAULT_PASSWORD_LENGTH = 5
 
-parser = argparse.ArgumentParser(description='Generate correct horse battery staple style password.')
+def main(argv=None):
+    args = argHandler(argv)
+    print(generatePassword(args.wordlist, args.passlength))
 
-parser.add_argument('-p','--passlength', default=DEFAULT_PASSWORD_LENGTH, type=int, help='wordlength of the generated password')
-parser.add_argument('wordlist', help='text file containing line separated words, used to generate password')
+def argHandler(argv):
+    parser = argparse.ArgumentParser(description='Generate correct horse battery staple style password.')
 
-args = parser.parse_args()
+    parser.add_argument('-p','--passlength', default=DEFAULT_PASSWORD_LENGTH, type=int, help='wordlength of the generated password')
+    parser.add_argument('wordlist', help='text file containing line separated words, used to generate password')
 
+    return parser.parse_args(argv)
 
-WLLength = 0
-for line in open(args.wordlist):
-    WLLength = WLLength + 1
+def getWordListLength(wordList):
+    WLLength = 0
+    for line in open(wordList):
+        WLLength = WLLength + 1
+    
+    return WLLength 
 
-Wordpool = list()
-Job = 0
+def generatePassword(wordList, passLength):
+    Wordpool = list()
+    Job = 0
+    secureRandom=random.SystemRandom()
+    
+    try:
+        if (passLength < 1):
+            raise ValueError("[errno 2] passlength is not positive")
+    
+    except ValueError:
+        traceback.print_exc()    
+    
+    else:    
+        while Job < passLength:
+            RandWord = secureRandom.randint(0, getWordListLength(wordList))
+            Wordpool.append(linecache.getline(wordList,RandWord))
+            Job = Job + 1
+        linecache.clearcache()
 
-secureRandom=random.SystemRandom()
+        return "".join(Wordpool)
 
-while Job < args.passlength:
-   RandWord = secureRandom.randint(0, WLLength)
-   Wordpool.append(linecache.getline(args.wordlist,RandWord))
-   Job = Job + 1
-
-linecache.clearcache()
-
-print("".join(Wordpool))
+if __name__ == "__main__":
+    sys.exit(main())
