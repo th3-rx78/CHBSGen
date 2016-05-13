@@ -42,7 +42,7 @@ def getWordFromList(wordList, minWordLength):
             randWord = linecache.getline(wordList,randLine)
             if (len(randWord) >= minWordLength+1):
                 linecache.clearcache()
-                return randWord            
+                return randWord.rstrip()            
 
 def generatePassword(wordList, passLength, minWordLength):
     Wordpool = list()
