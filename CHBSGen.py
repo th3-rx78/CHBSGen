@@ -7,6 +7,7 @@ import sys
 import traceback
 
 DEFAULT_PASSWORD_LENGTH = 5
+DEFAULT_MINIMUM_WORD_LENGTH = 1
 
 def main(argv=None):
     args = argHandler(argv)
@@ -16,6 +17,7 @@ def argHandler(argv):
     parser = argparse.ArgumentParser(description='Generate correct horse battery staple style password.')
 
     parser.add_argument('-p','--passlength', default=DEFAULT_PASSWORD_LENGTH, type=int, help='wordlength of the generated password')
+    parser.add_argument('-m','--minWordlength', default=DEFAULT_MINIMUM_WORD_LENGTH, type=int, help='specify minimum individual wordlength')
     parser.add_argument('wordlist', help='text file containing line separated words, used to generate password')
 
     return parser.parse_args(argv)
