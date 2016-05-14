@@ -11,13 +11,14 @@ DEFAULT_MINIMUM_WORD_LENGTH = 1
 
 def main(argv=None):
     args = argHandler(argv)
-    print(generatePassword(args.wordlist, args.passlength, args.minWordLength))
+    print(generatePassword(args.wordlist, args.passlength, args.minWordLength, args.delimiter))
 
 def argHandler(argv):
     parser = argparse.ArgumentParser(description='Generate correct horse battery staple style password.')
 
     parser.add_argument('-p','--passlength', default=DEFAULT_PASSWORD_LENGTH, type=int, help='wordlength of the generated password')
     parser.add_argument('-m','--minWordLength', default=DEFAULT_MINIMUM_WORD_LENGTH, type=int, help='specify minimum individual wordlength')
+    parser.add_argument('-d','--delimiter', default="", help='specify delimiter')
     parser.add_argument('wordlist', help='text file containing line separated words, used to generate password')
 
     return parser.parse_args(argv)
@@ -44,7 +45,7 @@ def getWordFromList(wordList, minWordLength):
                 linecache.clearcache()
                 return randWord.rstrip()            
 
-def generatePassword(wordList, passLength, minWordLength):
+def generatePassword(wordList, passLength, minWordLength, delimiter):
     Wordpool = list()
     Job = 0
     
@@ -57,7 +58,7 @@ def generatePassword(wordList, passLength, minWordLength):
     
     else:    
         while Job < passLength:
-            Wordpool.append(getWordFromList(wordList, minWordLength))
+            Wordpool.append(getWordFromList(wordList, minWordLength) + delimiter)
             Job = Job + 1
 
         return "".join(Wordpool)
